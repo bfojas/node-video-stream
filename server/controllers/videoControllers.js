@@ -4,7 +4,6 @@ const streamVideo = (req, res, next) => {
   let { range } = req.headers;
   let file = `./${req.params.file}`;
   fs.stat(file, (err, stats) => {
-    console.log('stat???', stats, err)
     if (err) {
       if (err.code === "ENOENT") {
         return res.sendStatus(404);
@@ -12,15 +11,8 @@ const streamVideo = (req, res, next) => {
       return next(err);
     }
     if (!range) {
-      //
-      // 	1.	Create the error
-      //
       let err = new Error("Wrong range");
       err.status = 416;
-
-      //
-      //	->	Send the error and stop the request.
-      //
       return next(err);
     }
 
@@ -34,7 +26,6 @@ const streamVideo = (req, res, next) => {
       end: end,
     };
 
-    console.log("range???", req.headers.range);
     let videoStream = fs.createReadStream(file, stream_position);
     videoStream.on("open", () => {
       res.writeHead(206, {
